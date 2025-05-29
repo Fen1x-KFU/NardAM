@@ -8,4 +8,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Castle.Windsor" Version="6.0.0" />
+    <PackageReference Include="Castle.Windsor.Extensions.DependencyInjection" Version="6.0.0" />
+  </ItemGroup>
+
 </Project>
