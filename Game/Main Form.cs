@@ -1,14 +1,22 @@
+using Microsoft.VisualBasic.ApplicationServices;
+
 namespace Game
 {
     public partial class MainForm : Form
     {
         private GameLogic game;
+        //private AppDbContext db;
+        //private UserGame us;
 
         public MainForm()
         {
             InitializeComponent();
             game = new GameLogic("Игрок 1", "Игрок 2");
-
+            //db = new AppDbContext();
+            //us.Name = "Andrey";
+            //us.Password = "4826";
+            //us.Reiting = 780;
+            //db.Users.Add(us);
         }
 
         //private void btnRoll_Click(object sender, EventArgs e)

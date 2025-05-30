@@ -15,6 +15,10 @@
         /// </summary>
         public int ChipsAtHome { get; set; }
         /// <summary>
+        /// Номер ирока в таблице (в бд это всё)
+        /// </summary>
+        public byte NumberPlayer { get; set; }
+        /// <summary>
         /// Ход
         /// </summary>
         public bool Move { get; set; }
