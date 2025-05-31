@@ -42,23 +42,27 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges13 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges15 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegistrationForm));
             TabControl = new Guna.UI2.WinForms.Guna2TabControl();
             tabPage1 = new TabPage();
             comboBox = new Guna.UI2.WinForms.Guna2ComboBox();
-            label1 = new Label();
+            lal_Rat = new Label();
             reg_Name = new Guna.UI2.WinForms.Guna2TextBox();
             reg_Pass = new Guna.UI2.WinForms.Guna2TextBox();
             lal_Password_Reg = new Label();
             lal_Name_Reg = new Label();
             btn_Reg = new Guna.UI2.WinForms.Guna2Button();
             tabPage2 = new TabPage();
+            switch_Language = new Guna.UI2.WinForms.Guna2ToggleSwitch();
+            lal_speak = new Label();
+            checkPass_Enter = new Guna.UI2.WinForms.Guna2CheckBox();
             lal_Password_Log = new Label();
             lal_Name_Log = new Label();
             enter_Pass = new Guna.UI2.WinForms.Guna2TextBox();
             enter_Name = new Guna.UI2.WinForms.Guna2TextBox();
             btn_Enter = new Guna.UI2.WinForms.Guna2Button();
-            checkPass_Enter = new Guna.UI2.WinForms.Guna2CheckBox();
             TabControl.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
@@ -98,7 +102,7 @@
             // tabPage1
             // 
             tabPage1.Controls.Add(comboBox);
-            tabPage1.Controls.Add(label1);
+            tabPage1.Controls.Add(lal_Rat);
             tabPage1.Controls.Add(reg_Name);
             tabPage1.Controls.Add(reg_Pass);
             tabPage1.Controls.Add(lal_Password_Reg);
@@ -132,15 +136,15 @@
             comboBox.Size = new Size(229, 36);
             comboBox.TabIndex = 7;
             // 
-            // label1
+            // lal_Rat
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI Semibold", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            label1.Location = new Point(122, 384);
-            label1.Name = "label1";
-            label1.Size = new Size(147, 25);
-            label1.TabIndex = 6;
-            label1.Text = "Рейтинг игрока";
+            lal_Rat.AutoSize = true;
+            lal_Rat.Font = new Font("Segoe UI Semibold", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            lal_Rat.Location = new Point(122, 384);
+            lal_Rat.Name = "lal_Rat";
+            lal_Rat.Size = new Size(147, 25);
+            lal_Rat.TabIndex = 6;
+            lal_Rat.Text = "Рейтинг игрока";
             // 
             // reg_Name
             // 
@@ -228,6 +232,8 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(switch_Language);
+            tabPage2.Controls.Add(lal_speak);
             tabPage2.Controls.Add(checkPass_Enter);
             tabPage2.Controls.Add(lal_Password_Log);
             tabPage2.Controls.Add(lal_Name_Log);
@@ -243,6 +249,50 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "АВТОРИЗАЦИЯ";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // switch_Language
+            // 
+            switch_Language.CheckedState.BorderColor = Color.FromArgb(94, 148, 255);
+            switch_Language.CheckedState.FillColor = Color.FromArgb(94, 148, 255);
+            switch_Language.CheckedState.InnerBorderColor = Color.White;
+            switch_Language.CheckedState.InnerColor = Color.White;
+            switch_Language.CustomizableEdges = customizableEdges9;
+            switch_Language.Location = new Point(31, 32);
+            switch_Language.Name = "switch_Language";
+            switch_Language.ShadowDecoration.CustomizableEdges = customizableEdges10;
+            switch_Language.Size = new Size(44, 25);
+            switch_Language.TabIndex = 8;
+            switch_Language.UncheckedState.BorderColor = Color.FromArgb(125, 137, 149);
+            switch_Language.UncheckedState.FillColor = Color.FromArgb(125, 137, 149);
+            switch_Language.UncheckedState.InnerBorderColor = Color.White;
+            switch_Language.UncheckedState.InnerColor = Color.White;
+            switch_Language.CheckedChanged += Switch_Language_CheckedChanged;
+            // 
+            // lal_speak
+            // 
+            lal_speak.AutoSize = true;
+            lal_speak.Location = new Point(81, 32);
+            lal_speak.Name = "lal_speak";
+            lal_speak.Size = new Size(66, 20);
+            lal_speak.TabIndex = 7;
+            lal_speak.Text = "Русский";
+            // 
+            // checkPass_Enter
+            // 
+            checkPass_Enter.AutoSize = true;
+            checkPass_Enter.CheckedState.BorderColor = Color.FromArgb(94, 148, 255);
+            checkPass_Enter.CheckedState.BorderRadius = 0;
+            checkPass_Enter.CheckedState.BorderThickness = 0;
+            checkPass_Enter.CheckedState.FillColor = Color.FromArgb(94, 148, 255);
+            checkPass_Enter.Location = new Point(122, 388);
+            checkPass_Enter.Name = "checkPass_Enter";
+            checkPass_Enter.Size = new Size(137, 24);
+            checkPass_Enter.TabIndex = 5;
+            checkPass_Enter.Text = "Скрыть пароль";
+            checkPass_Enter.UncheckedState.BorderColor = Color.FromArgb(125, 137, 149);
+            checkPass_Enter.UncheckedState.BorderRadius = 0;
+            checkPass_Enter.UncheckedState.BorderThickness = 0;
+            checkPass_Enter.UncheckedState.FillColor = Color.FromArgb(125, 137, 149);
             // 
             // lal_Password_Log
             // 
@@ -267,7 +317,7 @@
             // enter_Pass
             // 
             enter_Pass.BorderRadius = 10;
-            enter_Pass.CustomizableEdges = customizableEdges9;
+            enter_Pass.CustomizableEdges = customizableEdges11;
             enter_Pass.DefaultText = "";
             enter_Pass.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
             enter_Pass.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
@@ -281,14 +331,14 @@
             enter_Pass.Name = "enter_Pass";
             enter_Pass.PlaceholderText = "";
             enter_Pass.SelectedText = "";
-            enter_Pass.ShadowDecoration.CustomizableEdges = customizableEdges10;
+            enter_Pass.ShadowDecoration.CustomizableEdges = customizableEdges12;
             enter_Pass.Size = new Size(245, 48);
             enter_Pass.TabIndex = 2;
             // 
             // enter_Name
             // 
             enter_Name.BorderRadius = 10;
-            enter_Name.CustomizableEdges = customizableEdges11;
+            enter_Name.CustomizableEdges = customizableEdges13;
             enter_Name.DefaultText = "";
             enter_Name.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
             enter_Name.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
@@ -302,7 +352,7 @@
             enter_Name.Name = "enter_Name";
             enter_Name.PlaceholderText = "";
             enter_Name.SelectedText = "";
-            enter_Name.ShadowDecoration.CustomizableEdges = customizableEdges12;
+            enter_Name.ShadowDecoration.CustomizableEdges = customizableEdges14;
             enter_Name.Size = new Size(245, 48);
             enter_Name.TabIndex = 1;
             // 
@@ -312,7 +362,7 @@
             btn_Enter.BorderRadius = 20;
             btn_Enter.BorderStyle = System.Drawing.Drawing2D.DashStyle.Dash;
             btn_Enter.BorderThickness = 5;
-            btn_Enter.CustomizableEdges = customizableEdges13;
+            btn_Enter.CustomizableEdges = customizableEdges15;
             btn_Enter.DisabledState.BorderColor = Color.DarkGray;
             btn_Enter.DisabledState.CustomBorderColor = Color.DarkGray;
             btn_Enter.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
@@ -322,27 +372,10 @@
             btn_Enter.Location = new Point(122, 504);
             btn_Enter.Margin = new Padding(3, 4, 3, 4);
             btn_Enter.Name = "btn_Enter";
-            btn_Enter.ShadowDecoration.CustomizableEdges = customizableEdges14;
+            btn_Enter.ShadowDecoration.CustomizableEdges = customizableEdges16;
             btn_Enter.Size = new Size(245, 73);
             btn_Enter.TabIndex = 0;
             btn_Enter.Text = "ВОЙТИ";
-            // 
-            // checkPass_Enter
-            // 
-            checkPass_Enter.AutoSize = true;
-            checkPass_Enter.CheckedState.BorderColor = Color.FromArgb(94, 148, 255);
-            checkPass_Enter.CheckedState.BorderRadius = 0;
-            checkPass_Enter.CheckedState.BorderThickness = 0;
-            checkPass_Enter.CheckedState.FillColor = Color.FromArgb(94, 148, 255);
-            checkPass_Enter.Location = new Point(122, 388);
-            checkPass_Enter.Name = "checkPass_Enter";
-            checkPass_Enter.Size = new Size(153, 24);
-            checkPass_Enter.TabIndex = 5;
-            checkPass_Enter.Text = "Скрывать пароль";
-            checkPass_Enter.UncheckedState.BorderColor = Color.FromArgb(125, 137, 149);
-            checkPass_Enter.UncheckedState.BorderRadius = 0;
-            checkPass_Enter.UncheckedState.BorderThickness = 0;
-            checkPass_Enter.UncheckedState.FillColor = Color.FromArgb(125, 137, 149);
             // 
             // RegistrationForm
             // 
@@ -378,8 +411,10 @@
         private Guna.UI2.WinForms.Guna2TextBox enter_Name;
         private Guna.UI2.WinForms.Guna2TextBox reg_Name;
         private Guna.UI2.WinForms.Guna2TextBox reg_Pass;
-        private Label label1;
+        private Label lal_Rat;
         private Guna.UI2.WinForms.Guna2ComboBox comboBox;
         private Guna.UI2.WinForms.Guna2CheckBox checkPass_Enter;
+        private Label lal_speak;
+        private Guna.UI2.WinForms.Guna2ToggleSwitch switch_Language;
     }
 }
