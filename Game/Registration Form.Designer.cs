@@ -376,6 +376,7 @@
             btn_Enter.Size = new Size(245, 73);
             btn_Enter.TabIndex = 0;
             btn_Enter.Text = "ВОЙТИ";
+            btn_Enter.Click += btn_Enter_Click;
             // 
             // RegistrationForm
             // 
@@ -407,8 +408,8 @@
         private Label lal_Name_Reg;
         private Label lal_Password_Log;
         private Label lal_Name_Log;
-        private Guna.UI2.WinForms.Guna2TextBox enter_Pass;
-        private Guna.UI2.WinForms.Guna2TextBox enter_Name;
+        public Guna.UI2.WinForms.Guna2TextBox enter_Pass;
+        public Guna.UI2.WinForms.Guna2TextBox enter_Name;
         private Guna.UI2.WinForms.Guna2TextBox reg_Name;
         private Guna.UI2.WinForms.Guna2TextBox reg_Pass;
         private Label lal_Rat;

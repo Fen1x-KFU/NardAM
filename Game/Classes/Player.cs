@@ -11,10 +11,6 @@
         /// </summary>
         public Color Color { get; set; }
         /// <summary>
-        /// Сколько шашек дома
-        /// </summary>
-        public int ChipsAtHome { get; set; }
-        /// <summary>
         /// Номер ирока в таблице (в бд это всё)
         /// </summary>
         public byte NumberPlayer { get; set; }
@@ -31,7 +27,6 @@
         {
             Name = name;
             Color = color;
-            ChipsAtHome = 0;
             Move = false;
         }
     }

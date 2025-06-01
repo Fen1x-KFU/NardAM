@@ -4,8 +4,9 @@ namespace Game
 {
     public partial class RegistrationForm : Form
     {
-        private UserGame us = new UserGame();
+        //private UserGame us;
         private AppDbContext db = new AppDbContext();
+        private MainForm mainForm;
         public RegistrationForm()
         {
             InitializeComponent();
@@ -28,15 +29,25 @@ namespace Game
             }
             else
             {
-                us.Name = reg_Name.Text;
-                us.Password = reg_Pass.Text;
-                us.Reiting = int.Parse(comboBox.Text);
-                db.Add(us);
+                var newUser = new UserGame
+                {
+                    Name = reg_Name.Text,
+                    Password = reg_Pass.Text,
+                    Reiting = int.Parse(comboBox.Text),
+                    IsReady = false
+                };
+                //us.Name = reg_Name.Text;
+                //us.Password = reg_Pass.Text;
+                //us.Reiting = int.Parse(comboBox.Text);
+                //us.IsReady = false;
+                db.Add(newUser);
                 db.SaveChanges();
                 MessageBox.Show("Пользователь добавлен!");
                 TabControl.TabPages.Remove(tabPage1);
             }
         }
+
+
 
         private void ItemsComboBox()
         {
@@ -112,7 +123,7 @@ namespace Game
 
         private void ApplyLanguage(string lang)
         {
-            if (lang == "en")
+            if (lang is "en")
             {
                 lal_Name_Log.Text = Eng.Username.ToString();
                 lal_Password_Log.Text = Eng.Password.ToString();
@@ -153,6 +164,33 @@ namespace Game
             else
             {
                 ApplyLanguage("ru");
+            }
+        }
+
+        private void btn_Enter_Click(object sender, EventArgs e)
+        {
+            //us.Name = enter_Name.Text;
+            //us.
+            var user = db.Users.FirstOrDefault(u => u.Name == enter_Name.Text);
+
+            if (user != null)
+            {
+                if (user.Password == enter_Pass.Text)
+                {
+                    mainForm = new MainForm(user);
+                    //MessageBox.Show(user.Name);
+                    MessageBox.Show("Успешно!");
+                    mainForm.Show();
+                    this.Hide();
+                }
+                else
+                {
+                    MessageBox.Show("Проверьте пароль!");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Пользователя с таким именем не существует!");
             }
         }
     }
