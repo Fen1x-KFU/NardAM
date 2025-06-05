@@ -35,7 +35,7 @@ namespace Game
             modelBuilder.Entity<Player>()
             .HasOne(p => p.UserGame)
             .WithMany()
-            .HasForeignKey("UserGameId"); // EF автоматически создаст поле UserGameId
+            .HasForeignKey(p => p.UserId); // EF автоматически создаст поле UserGameId
         }
     }
 }

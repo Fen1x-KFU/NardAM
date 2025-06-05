@@ -1,6 +1,6 @@
 ﻿namespace Game
 {
-    internal class Dice
+    public class Dice
     {
         /// <summary>
         /// Класс с рандомом (для выпадения)

@@ -1,6 +1,6 @@
 ﻿namespace Game
 {
-    partial class MainForm
+    public partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -126,6 +126,7 @@
             cube2.Location = new Point(253, 31);
             cube2.Name = "cube2";
             cube2.Size = new Size(110, 110);
+            cube2.SizeMode = PictureBoxSizeMode.StretchImage;
             cube2.TabIndex = 5;
             cube2.TabStop = false;
             // 
@@ -134,6 +135,7 @@
             cube1.Location = new Point(106, 31);
             cube1.Name = "cube1";
             cube1.Size = new Size(110, 110);
+            cube1.SizeMode = PictureBoxSizeMode.StretchImage;
             cube1.TabIndex = 6;
             cube1.TabStop = false;
             // 
@@ -142,6 +144,7 @@
             cube3.Location = new Point(644, 31);
             cube3.Name = "cube3";
             cube3.Size = new Size(110, 110);
+            cube3.SizeMode = PictureBoxSizeMode.StretchImage;
             cube3.TabIndex = 7;
             cube3.TabStop = false;
             // 
@@ -150,6 +153,7 @@
             cube4.Location = new Point(793, 31);
             cube4.Name = "cube4";
             cube4.Size = new Size(110, 110);
+            cube4.SizeMode = PictureBoxSizeMode.StretchImage;
             cube4.TabIndex = 8;
             cube4.TabStop = false;
             // 

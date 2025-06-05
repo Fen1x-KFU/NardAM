@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Game
 {
-    internal class UserGame
+    public class UserGame
     {
         public int Id { get; set; }
         public string Name { get; set; }
