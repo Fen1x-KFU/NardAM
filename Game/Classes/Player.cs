@@ -2,18 +2,19 @@
 {
     internal class Player
     {
+        public int Id { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public UserGame UserGame { get; set; }
+        /// <summary>
+        /// Кубики игрока
+        /// </summary>
+        public Dice DicePlayer {  get; set; }
         /// <summary>
         /// Имя игрока
         /// </summary>
         public string Name { get; set; }
-        /// <summary>
-        /// Цвет игрока
-        /// </summary>
-        public Color Color { get; set; }
-        /// <summary>
-        /// Номер ирока в таблице (в бд это всё)
-        /// </summary>
-        public byte NumberPlayer { get; set; }
         /// <summary>
         /// Ход
         /// </summary>
@@ -22,11 +23,10 @@
         /// Базовый конструктор класса
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="color"></param>
-        public Player(string name, Color color)
+        public Player()
         {
-            Name = name;
-            Color = color;
+            DicePlayer.Value1 = 0;
+            DicePlayer.Value2 = 0;
             Move = false;
         }
     }

@@ -9,11 +9,11 @@
         /// <summary>
         /// Значение 1
         /// </summary>
-        public int Value1 { get; private set; }
+        public int Value1 { get; set; }
         /// <summary>
         /// Значение 2
         /// </summary>
-        public int Value2 { get; private set; }
+        public int Value2 { get; set; }
         /// <summary>
         /// Проверка на выпадение одинаковых значений
         /// </summary>

@@ -20,6 +20,11 @@ namespace Game
             user2 = db.Users.FirstOrDefault(u => u.Id != us.Id);
 
             board.Visible = false;
+            cube1.Visible = false;
+            cube2.Visible = false;
+            cube3.Visible = false;
+            cube4.Visible = false;
+            btn_Roll.Visible = false;
         }
 
         private async void btn_Ready_Click(object sender, EventArgs e)
@@ -50,6 +55,10 @@ namespace Game
                         btn_Ready.Visible = false;
                         CreateChips(Color.Red);
                         CreateButtonMove();
+                        lPlayer.Text = $"Игрок: {user_this.Name}";
+                        lPlayer2.Text = $"Противник: {user2.Name}";
+                        btn_Roll.Visible = true;
+                        //btn_Roll.Click += 
                     });
                 }
                 else
@@ -86,8 +95,6 @@ namespace Game
                 return false;
             }
         }
-
-        private Action _buttonAction;
 
 
         private string _baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -214,6 +221,38 @@ namespace Game
                 but.BringToFront();
             }
 
-        }   
+        }
+
+        private void btn_RollStart_Click(object sender, EventArgs e)
+        {
+            var pl_this = new Player();
+            var pl2 = new Player();
+
+            pl_this.Name = user_this.Name;
+            pl2.Name = user2.Name;
+            
+        }
+
+        private async Task<bool> WaitForOpponentStart()
+        {
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+            {
+                while (!cts.IsCancellationRequested)
+                {
+                    using (var freshDb = new AppDbContext()) // Новый контекст для каждой проверки
+                    {
+                        var opponent = await freshDb.Players
+                            .AsNoTracking() // Для оптимизации
+                            .FirstOrDefaultAsync(u => u.Name == user2.Name);
+
+                        if (opponent?.DicePlayer.Value1 != 0)
+                            return true;
+                    }
+
+                    await Task.Delay(1000, cts.Token);
+                }
+                return false;
+            }
+        }
     }
 }

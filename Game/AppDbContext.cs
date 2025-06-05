@@ -7,11 +7,13 @@ namespace Game
     {
         public DbSet<UserGame> Users { get; set; }
 
+        public DbSet<Player> Players { get; set; }
+
         public AppDbContext()
         {
             Database.EnsureCreated();
         }
-        
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -20,6 +22,20 @@ namespace Game
                     .UseNpgsql("Host=localhost;Database=BackgammonDB;Username=postgres;Password=4286")
                     .EnableSensitiveDataLogging();
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Указываем, что Dice — это "owned type" у Player
+            modelBuilder.Entity<Player>()
+                .OwnsOne(p => p.DicePlayer); // "Player имеет один Dice"
+            
+            modelBuilder.Entity<Player>()
+            .HasOne(p => p.UserGame)
+            .WithMany()
+            .HasForeignKey("UserGameId"); // EF автоматически создаст поле UserGameId
         }
     }
 }
