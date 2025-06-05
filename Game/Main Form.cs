@@ -248,52 +248,55 @@ namespace Game
         public async void btn_RollStart_Click(object sender, EventArgs e)
         {
             btn_Roll.Enabled = false;
-            db = new AppDbContext();
-
-            this.pl2 = db.Players.FirstOrDefault(p => p.Id != pl_this.Id);
-
-            pl_this.DicePlayer.Roll();
-            db.SaveChanges();
-
-            cube2.Visible = true;
-            cube3.Visible = true;
-
-            var image1 = Path.Combine(baseDir,
-                "..",
-                "..",
-                "..",
-                "Images",
-                $"Cube{pl_this.DicePlayer.Value1}.jpg");
-            var image2 = Path.Combine(baseDir,
-                "..",
-                "..",
-                "..",
-                "Images",
-                $"Cube{pl2.DicePlayer.Value1}.jpg");
-
-            var dicep = pl_this.DicePlayer.Value1;
-            var dicep2 = pl2.DicePlayer.Value1;
 
             try
             {
+                // Получаем свежий экземпляр своего игрока из БД
                 using (var freshDb = new AppDbContext())
                 {
-                    var currentUser = await freshDb.Players.FindAsync(pl_this.Id);
-                    if (currentUser != null)
-                    {
-                        currentUser.DicePlayer.Roll();
-                        await freshDb.SaveChangesAsync();
-                    }
-                }
-                var opponentStart = await WaitForOpponentStart();
+                    var currentUser = await freshDb.Players
+                        .Include(p => p.DicePlayer)
+                        .FirstOrDefaultAsync(p => p.UserId == user_this.Id);
 
-                if (opponentStart != 0)
-                {
+                    if (currentUser == null)
+                    {
+                        MessageBox.Show("Вы не найдены в базе данных.");
+                        return;
+                    }
+
+                    // Бросаем кубик
+                    currentUser.DicePlayer.Roll();
+
+                    await freshDb.SaveChangesAsync();
+
+                    // Запоминаем результат
+                    int myRoll = currentUser.DicePlayer.Value1;
+
+                    // Путь к картинке
+                    var imageMy = Path.Combine(baseDir, "..", "..", "..", "Images", $"Cube{myRoll}.jpg");
+
+                    // Ждём кубик соперника
+                    int opponentRoll = await WaitForOpponentStart();
+
+                    if (opponentRoll == 0)
+                    {
+                        MessageBox.Show("Соперник не бросил кубик.");
+                        btn_Roll.Enabled = true;
+                        return;
+                    }
+
+                    var imageOpponent = Path.Combine(baseDir, "..", "..", "..", "Images", $"Cube{opponentRoll}.jpg");
+
+                    // Обновляем интерфейс
                     this.Invoke((MethodInvoker)delegate
                     {
-                        LoadImageToBox(cube2, image1);
-                        LoadImageToBox(cube3, image2);
-                        if (dicep > dicep2)
+                        LoadImageToBox(cube2, imageMy);
+                        LoadImageToBox(cube3, imageOpponent);
+
+                        cube2.Visible = true;
+                        cube3.Visible = true;
+
+                        if (myRoll > opponentRoll)
                         {
                             MessageBox.Show("Вы начинаете");
                             btn_Roll.Click -= btn_RollStart_Click;
@@ -302,58 +305,60 @@ namespace Game
                             cube2.BackgroundImage = null;
                             cube3.BackgroundImage = null;
                         }
-                        else if (dicep < dicep2)
+                        else if (myRoll < opponentRoll)
                         {
-                            MessageBox.Show("Противник начинает");
+                            MessageBox.Show("Соперник начинает");
                             btn_Roll.Click -= btn_RollStart_Click;
                             btn_Roll.Click += btn_RollNew_Click;
-                            btn_Roll.Enabled = true;
-                            cube2.BackgroundImage = null;
-                            cube3.BackgroundImage = null;
+                            btn_Roll.Enabled = false;
                             cube2.Visible = false;
                             cube3.Visible = false;
                         }
                         else
                         {
-                            MessageBox.Show("Надо подбросить заново кубик");
+                            MessageBox.Show("Результат совпал. Бросьте заново.");
                             btn_Roll.Enabled = true;
                         }
                     });
                 }
-                else
-                {
-                    MessageBox.Show("Соперник не бросил кубик ");
-                    btn_Roll.Enabled = true;
-                }
-            
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show($"Произошла ошибка: {ex.Message}");
+                btn_Roll.Enabled = true;
             }
-
         }
 
         private async Task<int> WaitForOpponentStart()
         {
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+            try
             {
                 while (!cts.IsCancellationRequested)
                 {
-                    using (var freshDb = new AppDbContext()) // Новый контекст для каждой проверки
+                    await using (var freshDb = new AppDbContext())
                     {
-                        var opponent = await freshDb.Players
-                            .AsNoTracking() // Для оптимизации
-                            .FirstOrDefaultAsync(u => u.Name == user2.Name);
+                        var diceValue = await freshDb.Players
+                            .Where(u => u.Name == user2.Name)
+                            .Select(u => u.DicePlayer.Value1)
+                            .FirstOrDefaultAsync(cts.Token);
 
-                        if (opponent?.DicePlayer.Value1 != 0)
-                            return opponent.DicePlayer.Value1;
+                        if (diceValue != 0)
+                        {
+                            return diceValue;
+                        }
                     }
 
                     await Task.Delay(1000, cts.Token);
                 }
-                return 0;
             }
+            catch (OperationCanceledException)
+            {
+                MessageBox.Show("Игрок пока не бросил кубик");
+            }
+
+            return 0;
         }
 
         private async void btn_RollNew_Click(object sender, EventArgs e)
