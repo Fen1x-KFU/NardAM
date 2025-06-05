@@ -14,7 +14,12 @@ namespace Game
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Database=BackgammonDB;Username=postgres;Password=KekaNestea");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder
+                    .UseNpgsql("Host=localhost;Database=BackgammonDB;Username=postgres;Password=4286")
+                    .EnableSensitiveDataLogging();
+            }
         }
     }
 }

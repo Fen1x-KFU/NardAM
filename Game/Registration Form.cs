@@ -29,17 +29,13 @@ namespace Game
             }
             else
             {
-                var newUser = new UserGame
+                var newUser = new UserGame()
                 {
                     Name = reg_Name.Text,
                     Password = reg_Pass.Text,
-                    Reiting = int.Parse(comboBox.Text),
-                    IsReady = false
+                    Reiting = int.Parse(comboBox.Text)
                 };
-                //us.Name = reg_Name.Text;
-                //us.Password = reg_Pass.Text;
-                //us.Reiting = int.Parse(comboBox.Text);
-                //us.IsReady = false;
+
                 db.Add(newUser);
                 db.SaveChanges();
                 MessageBox.Show("Пользователь добавлен!");
