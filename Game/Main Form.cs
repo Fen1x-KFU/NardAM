@@ -1,8 +1,5 @@
 using Guna.UI2.WinForms;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic.ApplicationServices;
-using System.Runtime.CompilerServices;
-using System.Windows.Forms;
 
 namespace Game
 {

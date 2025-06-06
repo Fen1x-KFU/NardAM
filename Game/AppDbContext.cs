@@ -3,7 +3,7 @@ using Microsoft.VisualBasic.ApplicationServices;
 
 namespace Game
 {
-    internal class AppDbContext : DbContext
+    public class AppDbContext : DbContext
     {
         public DbSet<UserGame> Users { get; set; }
 
@@ -19,7 +19,7 @@ namespace Game
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder
-                    .UseNpgsql("Host=localhost;Database=BackgammonDB;Username=postgres;Password=4286")
+                    .UseNpgsql("Host=localhost;Database=BackgammonDB;Username=postgres;Password=lazycat08")
                     .EnableSensitiveDataLogging();
             }
         }
