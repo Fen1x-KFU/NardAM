@@ -1,6 +1,7 @@
 using Guna.UI2.WinForms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic.ApplicationServices;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace Game
@@ -252,9 +253,9 @@ namespace Game
             try
             {
                 // Получаем свежий экземпляр своего игрока из БД
-                using (var freshDb = new AppDbContext())
+                using (var db = new AppDbContext())
                 {
-                    var currentUser = await freshDb.Players
+                    var currentUser = await db.Players
                         .Include(p => p.DicePlayer)
                         .FirstOrDefaultAsync(p => p.UserId == user_this.Id);
 
@@ -267,7 +268,7 @@ namespace Game
                     // Бросаем кубик
                     currentUser.DicePlayer.Roll();
 
-                    await freshDb.SaveChangesAsync();
+                    await db.SaveChangesAsync();
 
                     // Запоминаем результат
                     int myRoll = currentUser.DicePlayer.Value1;
@@ -302,8 +303,10 @@ namespace Game
                             btn_Roll.Click -= btn_RollStart_Click;
                             btn_Roll.Click += btn_RollNew_Click;
                             btn_Roll.Enabled = true;
-                            cube2.BackgroundImage = null;
-                            cube3.BackgroundImage = null;
+                            cube2.Image = null;
+                            cube3.Image = null;
+                            currentUser.Move = true;
+                            db.SaveChanges();
                         }
                         else if (myRoll < opponentRoll)
                         {
@@ -311,13 +314,19 @@ namespace Game
                             btn_Roll.Click -= btn_RollStart_Click;
                             btn_Roll.Click += btn_RollNew_Click;
                             btn_Roll.Enabled = false;
+                            cube2.Image = null;
+                            cube3.Image = null;
                             cube2.Visible = false;
                             cube3.Visible = false;
+                            currentUser.Move = false; 
+                            db.SaveChanges();
                         }
                         else
                         {
                             MessageBox.Show("Результат совпал. Бросьте заново.");
                             btn_Roll.Enabled = true;
+                            currentUser.DicePlayer.ResettingValues();
+                            db.SaveChanges();
                         }
                     });
                 }
@@ -363,7 +372,15 @@ namespace Game
 
         private async void btn_RollNew_Click(object sender, EventArgs e)
         {
+            db = new AppDbContext();
 
+            var pl = db.Players.FirstOrDefault(u =>  u.Name == user_this.Name);
+            var pl2 = db.Players.FirstOrDefault(u =>  u.Name == user2.Name);
+            pl2.Move = true;
+            pl.Move = false;
+
+
+            db.SaveChanges();
         }
 
         private void LoadImageToBox(PictureBox pictureBox, string imagePath)
@@ -388,5 +405,7 @@ namespace Game
                 MessageBox.Show($"Ошибка загрузки изображения: {ex.Message}");
             }
         }
+
+        //private void MainForm_FormClosing(object sender, FormClosingEventArgs e) => Application.Exit();
     }
 }
