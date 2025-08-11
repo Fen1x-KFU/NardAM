@@ -177,6 +177,7 @@
             MaximizeBox = false;
             Name = "MainForm";
             Text = "MainForm";
+            this.FormClosing += MainForm_FormClosing;
             ((System.ComponentModel.ISupportInitialize)board).EndInit();
             ((System.ComponentModel.ISupportInitialize)cube2).EndInit();
             ((System.ComponentModel.ISupportInitialize)cube1).EndInit();

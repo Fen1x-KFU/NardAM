@@ -19,7 +19,7 @@ namespace Game
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder
-                    .UseNpgsql("Host=localhost;Database=BackgammonDB;Username=postgres;Password=lazycat08")
+                    .UseNpgsql("Host=localhost;Database=BackgammonDB;Username=postgres;Password=4286")
                     .EnableSensitiveDataLogging();
             }
         }

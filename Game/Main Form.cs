@@ -5,7 +5,6 @@ namespace Game
 {
     public partial class MainForm : Form
     {
-        private AppDbContext db = new AppDbContext();
         private UserGame user_this;
         private UserGame user2;
         private Player pl_this;
@@ -17,26 +16,30 @@ namespace Game
         {
             InitializeComponent();
 
-            this.user_this = us; 
+            this.user_this = us;
 
-            var existingPlayer = db.Players.FirstOrDefault(p => p.UserId == us.Id);
-
-            if (existingPlayer == null)
+            // Обновляем статус в БД
+            using (var freshDb = new AppDbContext()) // Новый контекст!
             {
+                var existingPlayer = freshDb.Players.FirstOrDefault(p => p.UserId == us.Id);
 
-                this.pl_this = new Player
+                if (existingPlayer == null)
                 {
-                    UserGame = db.Users.Find(us.Id),
-                    UserId = us.Id,
-                    Name = us.Name
-                };
 
-                db.Players.Add(pl_this);
-                db.SaveChanges();
-            }
-            else
-            {
-                this.pl_this = existingPlayer;
+                    this.pl_this = new Player
+                    {
+                        UserGame = freshDb.Users.Find(us.Id),
+                        UserId = us.Id,
+                        Name = us.Name
+                    };
+
+                    freshDb.Players.Add(pl_this);
+                    freshDb.SaveChanges();
+                }
+                else
+                {
+                    this.pl_this = existingPlayer;
+                }
             }
 
             board.Visible = false;
@@ -53,24 +56,29 @@ namespace Game
 
             try
             {
-                // Обновляем статус в БД
-                using (var freshDb = new AppDbContext()) // Новый контекст!
+                // 1. Обновляем статус в новом контексте
+                using (var updateDb = new AppDbContext())
                 {
-                    var currentUser = await freshDb.Users.FindAsync(user_this.Id);
+                    var currentUser = await updateDb.Users.FindAsync(user_this.Id);
                     if (currentUser != null)
                     {
                         currentUser.IsReady = true;
-                        await freshDb.SaveChangesAsync();
+                        await updateDb.SaveChangesAsync();
                     }
                 }
 
-                // Ожидаем готовность соперника
+                // 2. Ожидаем соперника
                 bool opponentReady = await WaitForOpponentReady();
-                user2 = db.Users.FirstOrDefault(u => u.Id != user_this.Id);
 
-                if (opponentReady)
+                using (var db = new AppDbContext())
                 {
-                    this.Invoke((MethodInvoker)delegate
+                    user2 = await db.Users.FirstOrDefaultAsync(u => u.Id != user_this.Id);
+                }
+
+                // 4. Обновляем UI
+                if (opponentReady && user2 != null)
+                {
+                    BeginInvoke((MethodInvoker)delegate
                     {
                         board.Visible = true;
                         btn_Ready.Visible = false;
@@ -89,158 +97,36 @@ namespace Game
             }
             catch (Exception ex)
             {
-                MessageBox.Show("В базе данных только один пользователь!");
+                MessageBox.Show($"Ошибка: {ex.Message}");
                 btn_Ready.Enabled = true;
             }
         }
 
         private async Task<bool> WaitForOpponentReady()
         {
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            try
             {
                 while (!cts.IsCancellationRequested)
                 {
-                    using (var freshDb = new AppDbContext()) // Новый контекст для каждой проверки
+                    using (var freshDb = new AppDbContext())
                     {
                         var opponent = await freshDb.Users
-                            .AsNoTracking() // Для оптимизации
-                            .FirstOrDefaultAsync(u => u.Id != user_this.Id);
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(u => u.Id != user_this.Id && u.IsReady, cts.Token);
 
-                        if (opponent?.IsReady == true)
+                        if (opponent != null)
                             return true;
                     }
 
-                    await Task.Delay(1000, cts.Token);
+                    await Task.Delay(1000, cts.Token).ConfigureAwait(false);
                 }
+            }
+            catch (OperationCanceledException)
+            {
                 return false;
             }
-        }
-
-
-        private string _baseDir = AppDomain.CurrentDomain.BaseDirectory;
-
-        private List<Button> _buttonsMove = new List<Button>();
-        private List<Guna2CircleButton> _chips = new List<Guna2CircleButton>();
-
-
-        private void CreateChips(Color color_this)
-        {
-            int chipSize = 32;       // Размер фишки
-            int overlap = chipSize / 4;
-
-            for (int i = 0; i < 15; i++)
-            {
-                Guna2CircleButton chip = new Guna2CircleButton();
-                chip.Width = chipSize;
-                chip.Height = chipSize;
-                chip.FillColor = color_this;
-                chip.BackColor = Color.Transparent;
-
-                chip.Location = new Point(
-                    board.Left,
-                    board.Top + board.Height / 2 - chipSize - i * 10
-                    );
-
-                board.Controls.Add(chip);
-                chip.BringToFront();
-            }
-
-            for (int i = 0; i < 15; i++)
-            {
-                Guna2CircleButton chip = new Guna2CircleButton();
-                chip.Width = chipSize;
-                chip.Height = chipSize;
-                chip.FillColor = Color.Black;
-                chip.BackColor = Color.Transparent;
-
-                chip.Location = new Point(
-                    board.Right - 118,
-                    board.Top - board.Height / 2 + chipSize + i * 10
-                    );
-
-                board.Controls.Add(chip);
-                chip.BringToFront();
-            }
-        }
-
-        private void CreateButtonMove()
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                var but = new Button()
-                {
-                    Name = $"but{i + 13}",
-                    Height = 40,
-                    Width = 40,
-                    Location = new Point(
-                        board.Left + 38 + i * 67,
-                        board.Top - 50
-                    ),
-                    BackColor = Color.White,
-                    Text = $"{i + 13}"
-                };
-
-                this.Controls.Add(but);
-                but.BringToFront();
-            }
-
-            for (int i = 0; i < 6; i++)
-            {
-                var but = new Button()
-                {
-                    Name = $"but{i + 19}",
-                    Height = 40,
-                    Width = 40,
-                    Location = new Point(
-                        board.Left + 38 + (i + 6) * 67 + 55,
-                        board.Top - 50
-                    ),
-                    BackColor = Color.White,
-                    Text = $"{i + 19}"
-                };
-
-                this.Controls.Add(but);
-                but.BringToFront();
-            }
-
-            for (int i = 0; i < 6; i++)
-            {
-                var but = new Button()
-                {
-                    Name = $"but{i + 1}",
-                    Height = 40,
-                    Width = 40,
-                    Location = new Point(
-                        board.Left + 38 + i * 67,
-                        board.Top + board.Height + 18
-                    ),
-                    BackColor = Color.White,
-                    Text = $"{i + 1}"
-                };
-
-                this.Controls.Add(but);
-                but.BringToFront();
-            }
-
-            for (int i = 0; i < 6; i++)
-            {
-                var but = new Button()
-                {
-                    Name = $"but{i + 7}",
-                    Height = 40,
-                    Width = 40,
-                    Location = new Point(
-                        board.Left + 38 + (i + 6) * 67 + 55,
-                        board.Top + board.Height + 18
-                    ),
-                    BackColor = Color.White,
-                    Text = $"{i + 7}"
-                };
-
-                this.Controls.Add(but);
-                but.BringToFront();
-            }
-
+            return false;
         }
 
         public async void btn_RollStart_Click(object sender, EventArgs e)
@@ -369,40 +255,7 @@ namespace Game
 
         private async void btn_RollNew_Click(object sender, EventArgs e)
         {
-            db = new AppDbContext();
 
-            var pl = db.Players.FirstOrDefault(u =>  u.Name == user_this.Name);
-            var pl2 = db.Players.FirstOrDefault(u =>  u.Name == user2.Name);
-            pl2.Move = true;
-            pl.Move = false;
-
-
-            db.SaveChanges();
         }
-
-        private void LoadImageToBox(PictureBox pictureBox, string imagePath)
-        {
-            if (pictureBox == null) return;
-
-            if (!File.Exists(imagePath))
-            {
-                MessageBox.Show($"Файл не найден: {imagePath}");
-                return;
-            }
-
-            try
-            {
-                pictureBox.Image?.Dispose(); // Освобождаем старое изображение
-                pictureBox.Image = new Bitmap(imagePath);
-                pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-                pictureBox.Visible = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка загрузки изображения: {ex.Message}");
-            }
-        }
-
-        //private void MainForm_FormClosing(object sender, FormClosingEventArgs e) => Application.Exit();
     }
 }
