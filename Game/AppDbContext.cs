@@ -28,6 +28,10 @@ namespace Game
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<UserGame>()
+            .Property(u => u.IsReady)
+            .HasColumnType("text"); // Явно указываем тип в БД
+
             // Указываем, что Dice — это "owned type" у Player
             modelBuilder.Entity<Player>()
                 .OwnsOne(p => p.DicePlayer); // "Player имеет один Dice"

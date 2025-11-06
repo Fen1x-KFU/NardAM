@@ -3,12 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Game
 {
     public partial class MainForm : Form
     {
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) => Application.Exit();
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            using (var freshDb = new AppDbContext())
+            {
+                var currentUser = freshDb.Users.Find(user_this.Id);
+                if (currentUser != null)
+                {
+                    currentUser.IsReady = "NIG";
+                    freshDb.SaveChanges();
+                }
+            }
+            Application.Exit();
+        }
 
         private void LoadImageToBox(PictureBox pictureBox, string imagePath)
         {

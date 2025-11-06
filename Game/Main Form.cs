@@ -1,4 +1,3 @@
-using Guna.UI2.WinForms;
 using Microsoft.EntityFrameworkCore;
 
 namespace Game
@@ -62,21 +61,21 @@ namespace Game
                     var currentUser = await updateDb.Users.FindAsync(user_this.Id);
                     if (currentUser != null)
                     {
-                        currentUser.IsReady = true;
+                        currentUser.IsReady = "Ready";
                         await updateDb.SaveChangesAsync();
                     }
                 }
 
                 // 2. Ожидаем соперника
-                bool opponentReady = await WaitForOpponentReady();
+                int opponentReadyId = await WaitForOpponentReady();
 
                 using (var db = new AppDbContext())
                 {
-                    user2 = await db.Users.FirstOrDefaultAsync(u => u.Id != user_this.Id);
+                    user2 = await db.Users.FirstOrDefaultAsync(u => u.Id == opponentReadyId);
                 }
 
                 // 4. Обновляем UI
-                if (opponentReady && user2 != null)
+                if (user2 != null)
                 {
                     BeginInvoke((MethodInvoker)delegate
                     {
@@ -88,6 +87,13 @@ namespace Game
                         lPlayer2.Text = $"Противник: {user2.Name}";
                         btn_Roll.Visible = true;
                     });
+                    using (var updateDb = new AppDbContext())
+                    {
+                        var currentUser = updateDb.Users.Find(user_this.Id);
+
+                        currentUser.IsReady = "IG";
+                        await updateDb.SaveChangesAsync();
+                    }
                 }
                 else
                 {
@@ -102,7 +108,7 @@ namespace Game
             }
         }
 
-        private async Task<bool> WaitForOpponentReady()
+        private async Task<int> WaitForOpponentReady()
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             try
@@ -113,10 +119,10 @@ namespace Game
                     {
                         var opponent = await freshDb.Users
                             .AsNoTracking()
-                            .FirstOrDefaultAsync(u => u.Id != user_this.Id && u.IsReady, cts.Token);
+                            .FirstOrDefaultAsync(u => u.Id != user_this.Id && u.IsReady == "Ready", cts.Token);
 
                         if (opponent != null)
-                            return true;
+                            return opponent.Id;
                     }
 
                     await Task.Delay(1000, cts.Token).ConfigureAwait(false);
@@ -124,9 +130,9 @@ namespace Game
             }
             catch (OperationCanceledException)
             {
-                return false;
+                return 0;
             }
-            return false;
+            return 0;
         }
 
         public async void btn_RollStart_Click(object sender, EventArgs e)

@@ -51,7 +51,8 @@ namespace Game
 
         private void CreateButtonMove()
         {
-            for (int i = 0; i < 6; i--)
+            // Фишки 13-18 (справа налево)
+            for (int i = 5; i > -1; i--)
             {
                 var but = new Button()
                 {
@@ -59,18 +60,18 @@ namespace Game
                     Height = 40,
                     Width = 40,
                     Location = new Point(
-                        board.Left + 43 + i * 67,
+                        board.Left + board.Width - 76 - i * 70, // Просто используем i для расчета позиции
                         board.Top - 50
                     ),
                     BackColor = Color.White,
                     Text = $"{i + 13}"
                 };
-
                 this.Controls.Add(but);
                 but.BringToFront();
             }
 
-            for (int i = 0; i < 6; i--)
+            // Фишки 19-24 (справа налево)
+            for (int i = 5; i > -1; i--)
             {
                 var but = new Button()
                 {
@@ -78,17 +79,17 @@ namespace Game
                     Height = 40,
                     Width = 40,
                     Location = new Point(
-                        board.Left + 43 + (i + 6) * 67 + 55,
+                        board.Left + board.Width - 76 - (i + 6) * 68 - 55, // Используем i + 6
                         board.Top - 50
                     ),
                     BackColor = Color.White,
                     Text = $"{i + 19}"
                 };
-
                 this.Controls.Add(but);
                 but.BringToFront();
             }
 
+            // Фишки 1-6 (слева направо - оставляем как было)
             for (int i = 0; i < 6; i++)
             {
                 var but = new Button()
@@ -103,11 +104,11 @@ namespace Game
                     BackColor = Color.White,
                     Text = $"{i + 1}"
                 };
-
                 this.Controls.Add(but);
                 but.BringToFront();
             }
 
+            // Фишки 7-12 (слева направо - оставляем как было)
             for (int i = 0; i < 6; i++)
             {
                 var but = new Button()
@@ -122,13 +123,11 @@ namespace Game
                     BackColor = Color.White,
                     Text = $"{i + 7}"
                 };
-
                 this.Controls.Add(but);
                 but.BringToFront();
             }
-
         }
 
-
     }
+
 }

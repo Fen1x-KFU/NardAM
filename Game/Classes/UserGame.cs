@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public string Password { get; set; }
         public int Reiting { get; set; } 
-        public bool IsReady { get; set; }
+        public string IsReady { get; set; }
 
         public UserGame(UserGame user)
         {
@@ -19,7 +19,7 @@
 
         public UserGame()
         {
-            this.IsReady = false;
+            this.IsReady = "NIG"; // Not in game/In game/Ready
         }
     }
 }
